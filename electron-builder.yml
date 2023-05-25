@@ -1,0 +1,54 @@
+appId: 'OTCR-Launcher-V3'
+productName: 'Otako Craft Launcher'
+artifactName: '${productName}-instalador-${version}.${ext}'
+
+copyright: 'Copyright © 2019-2023 The Ghost'
+
+asar: true
+compression: 'maximum'
+
+files:
+  - '!{dist,.gitignore,.vscode,dev-app-update.yml,.nvmrc}'
+
+extraResources:
+  - 'libraries'
+
+# Windows Configuration
+win: 
+  target: 
+    - target: 'nsis'
+      arch: 'x64'
+  icon: app\assets\images\Logo.ico
+
+# Windows Installer Configuration
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  installerIcon: app\assets\images\Logo.ico
+  uninstallerIcon: app\assets\images\Logo.ico
+
+# macOS Configuration
+mac:
+  target:
+    - target: 'dmg'
+      arch:
+        - 'x64'
+        - 'arm64'
+  artifactName: '${productName}-instalador-${version}-${arch}.${ext}'
+  category: 'public.app-category.games'
+
+# Linux Configuration
+linux: 
+  target: 'AppImage'
+  maintainer: 'The Ghost'
+  vendor: 'The Ghost'
+  synopsis: 'Launcher de Minecraft hecho para Otako Craft Mods'
+  description: 'Launcher de Minecraft hecho para Otako Craft Mods'
+  category: 'Game'
+
+
+directories:
+  buildResources: 'build'
+  output: 'dist'

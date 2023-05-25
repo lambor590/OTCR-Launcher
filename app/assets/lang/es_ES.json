@@ -1,0 +1,49 @@
+{
+  "html": {
+    "avatarOverlay": "Editar"
+  },
+  "js": {
+    "login": {
+      "error": {
+        "invalidValue": "* Valor Inválido",
+        "requiredValue": "* Requerido",
+        "userMigrated": {
+          "title": "Error Durante el Inicio de Sesión:<br>Credenciales Inválidas",
+          "desc": "Has intentado iniciar sesión con una cuenta migrada. Intenta nuevamente usando el correo electrónico de la cuenta como nombre de usuario."
+        },
+        "invalidCredentials": {
+          "title": "Error Durante el Inicio de Sesión:<br>Credenciales Inválidas",
+          "desc": "El correo electrónico o la contraseña que ha introducido no son correctos. Inténtalo de nuevo."
+        },
+        "rateLimit": {
+          "title": "Error Durante el Inicio de Sesión:<br>Demasiados Intentos",
+          "desc": "Ha habido demasiados intentos de inicio de sesión con esta cuenta recientemente. Por favor, inténtelo de nuevo más tarde."
+        },
+        "noInternet": {
+          "title": "Error Durante el Inicio de Sesión:<br>No Internet Connection",
+          "desc": "Debes estar conectado a Internet para iniciar sesión. Conéctate e inténtalo de nuevo."
+        },
+        "authDown": {
+          "title": "Error Durante el Inicio de Sesión:<br>El Servidor de Autenticación está Desconectado",
+          "desc": "El servidor de autenticación de Mojang está actualmente fuera de línea o inaccesible. Espera un poco y vuelve a intentarlo. Puedes comprobar el estado en <a href=\"https://help.mojang.com/\">el portal de ayuda de Mojang</a>."
+        },
+        "notPaid": {
+          "title": "Error Durante el Inicio de Sesión:<br>Juego No comprado",
+          "desc": "La cuenta con la intentas iniciar sesión no tiene Minecraft comprado.<br>Puedes comprarlo en <a href=\"https://minecraft.net/\">Minecraft.net</a>"
+        },
+        "unknown": {
+          "title": "Error Durante el Inicio de Sesión:<br>Error Desconocido"
+        }
+      },
+      "login": "INICIAR SESIÓN",
+      "loggingIn": "INICIANDO SESIÓN",
+      "success": "ÉXITO",
+      "tryAgain": "Volver a Intentar"
+    },
+    "landing": {
+      "launch": {
+        "pleaseWait": "Por favor, espera.."
+      }
+    }
+  }
+}
