@@ -59,9 +59,7 @@ if (!isDev) {
         loggerAutoUpdater.info("Nueva actualización disponible", info.version);
 
         if (process.platform === "darwin") {
-          info.darwindownload = `https://github.com/lambor590/OTCR-Launcher-V3/releases/download/v${
-            info.version
-          }/OTCR-Launcher-V3-setup-${info.version}${
+          info.darwindownload = `https://github.com/lambor590/OTCR-Launcher-V3/releases/latest/Otako.Craft.Launcher-instalador-${
             process.arch === "arm64" ? "-arm64" : "-x64"
           }.dmg`;
           showUpdateUI(info);
