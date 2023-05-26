@@ -5,9 +5,9 @@
   "description": "Launcher de Minecraft para servidores con mods, hecho para Otako Craft Mods",
   "author": "The Ghost (lambor590)",
   "license": "UNLICENSED",
-  "homepage": "https://github.com/lambor590/OTCR-Launcher-V3",
+  "homepage": "https://github.com/lambor590/OTCR-Launcher",
   "bugs": {
-    "url": "https://github.com/lambor590/OTCR-Launcher-V3/issues"
+    "url": "https://github.com/lambor590/OTCR-Launcher/issues"
   },
   "private": true,
   "main": "index.js",
@@ -43,6 +43,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lambor590/OTCR-Launcher-V3.git"
+    "url": "git+https://github.com/lambor590/OTCR-Launcher.git"
   }
 }

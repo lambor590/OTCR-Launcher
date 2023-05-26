@@ -1,4 +1,4 @@
-appId: 'OTCR-Launcher-V3'
+appId: 'OTCR-Launcher'
 productName: 'Otako Craft Launcher'
 artifactName: '${productName}-instalador.${ext}'
 

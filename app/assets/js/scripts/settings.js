@@ -1675,7 +1675,7 @@ function populateAboutVersionInformation() {
  */
 function populateReleaseNotes() {
   $.ajax({
-    url: "https://github.com/lambor590/OTCR-Launcher-V3/releases.atom",
+    url: "https://github.com/lambor590/OTCR-Launcher/releases.atom",
     success: (data) => {
       const version = "v" + remote.app.getVersion();
       const entries = $(data).find("entry");
