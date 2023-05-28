@@ -1,6 +1,6 @@
 appId: 'OTCR-Launcher'
 productName: 'Otako Craft Launcher'
-artifactName: '${productName}-instalador.${ext}'
+artifactName: 'Otako-Craft-Launcher-instalador.${ext}'
 
 copyright: 'Copyright © 2019-2023 The Ghost'
 
@@ -36,7 +36,7 @@ mac:
       arch:
         - 'x64'
         - 'arm64'
-  artifactName: '${productName}-instalador-${arch}.${ext}'
+  artifactName: 'Otako-Craft-Launcher-instalador-${arch}.${ext}'
   category: 'public.app-category.games'
 
 # Linux Configuration

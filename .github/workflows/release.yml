@@ -52,5 +52,5 @@ jobs:
           tag_name: "v${{ env.VERSION }}"
           generate_release_notes: true
           files: |
-            dist/Otako Craft*
+            dist/Otako-Craft*
             dist/latest*.yml
