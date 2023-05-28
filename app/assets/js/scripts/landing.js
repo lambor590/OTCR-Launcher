@@ -202,7 +202,7 @@ const checkMaintenance = async function () {
     mntInfo.rawDistribution.maintenance.enabled,
     mntInfo.rawDistribution.maintenance.message,
   ];
-}
+};
 
 checkMaintenance().then((maintenance) => {
   if (maintenance[0]) {
@@ -649,7 +649,8 @@ async function dlAsync(login = true) {
       toggleLaunchArea(false);
       proc.stdout.removeListener("data", tempListener);
       proc.stderr.removeListener("data", gameErrorListener);
-      // TODO: Close launcher when the game launches
+
+      if (ConfigManager.getCloseAtLaunch()) remote.app.quit();
     };
     const start = Date.now();
 
@@ -694,7 +695,6 @@ async function dlAsync(login = true) {
       proc.stderr.on("data", gameErrorListener);
 
       setLaunchDetails("Hecho. ¡Disfruta!");
-
     } catch (err) {
       loggerLaunchSuite.error("Error durante el inicio", err);
       showLaunchFailure(
