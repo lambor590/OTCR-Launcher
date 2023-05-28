@@ -60,7 +60,7 @@ if (!isDev) {
 
         if (process.platform === "darwin") {
           info.darwindownload = `https://github.com/lambor590/OTCR-Launcher/releases/latest/Otako.Craft.Launcher-instalador-${
-            process.arch === "arm64" ? "-arm64" : "-x64"
+            process.arch === "arm64" ? "arm64" : "x64"
           }.dmg`;
           showUpdateUI(info);
         }
