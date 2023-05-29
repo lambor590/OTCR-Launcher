@@ -1010,7 +1010,7 @@ async function resolveDropinModsForUI() {
                                 <div class="settingsDropinRemoveWrapper">
                                     <button class="settingsDropinRemoveButton" remmod="${
                                       dropin.fullName
-                                    }">Remove</button>
+                                    }">Eliminar</button>
                                 </div>
                             </div>
                         </div>
