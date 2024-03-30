@@ -14,17 +14,124 @@ const { LoggerUtil } = require("helios-core");
 const { RestResponseStatus } = require("helios-core/common");
 const {
   MojangRestAPI,
-  mojangErrorDisplayable,
   MojangErrorCode,
 } = require("helios-core/mojang");
 const {
   MicrosoftAuth,
-  microsoftErrorDisplayable,
   MicrosoftErrorCode,
 } = require("helios-core/microsoft");
 const { AZURE_CLIENT_ID } = require("./ipcconstants");
 
 const log = LoggerUtil.getLogger("AuthManager");
+
+// Error messages
+function microsoftErrorDisplayable(errorCode) {
+  switch (errorCode) {
+    case MicrosoftErrorCode.NO_PROFILE:
+      return {
+        title: 'No se encontró un perfil',
+        desc: 'La cuenta de Microsoft que está intentando iniciar sesión no tiene un perfil de Minecraft vinculado a ella.'
+      }
+    case MicrosoftErrorCode.NO_XBOX_ACCOUNT:
+      return {
+        title: 'No se encontró una cuenta de Xbox',
+        desc: 'La cuenta de Microsoft que está intentando iniciar sesión no tiene una cuenta de Xbox vinculada a ella.'
+      }
+    case MicrosoftErrorCode.XBL_BANNED:
+      return {
+        title: 'Cuenta suspendida en Xbox Live',
+        desc: 'La cuenta de Microsoft que está intentando iniciar sesión ha sido suspendida en Xbox Live.'
+      }
+    case MicrosoftErrorCode.UNDER_18:
+      return {
+        title: 'La cuenta es menor de 18 años',
+        desc: 'La cuenta de Microsoft que está intentando iniciar sesión es menor de 18 años y no puede jugar Minecraft.'
+      }
+    case MicrosoftErrorCode.UNKNOWN:
+      return {
+        title: 'Error desconocido',
+        desc: 'Se produjo un error desconocido al intentar iniciar sesión con Microsoft. Por favor, inténtelo de nuevo más tarde.'
+      }
+  }
+}
+
+function mojangErrorDisplayable(errorCode) {
+  switch (errorCode) {
+    case MojangErrorCode.ERROR_METHOD_NOT_ALLOWED:
+      return {
+        title: 'Método no permitido',
+        desc: 'El método de autenticación no está permitido en este servidor.',
+      }
+    case MojangErrorCode.ERROR_NOT_FOUND:
+      return {
+        title: 'Cuenta no encontrada',
+        desc: 'La cuenta de usuario no existe en Mojang.',
+      }
+    case MojangErrorCode.ERROR_USER_MIGRATED:
+      return {
+        title: 'Cuenta migrada',
+        desc: 'La cuenta de usuario ha sido migrada a una nueva cuenta.',
+      }
+    case MojangErrorCode.ERROR_INVALID_CREDENTIALS:
+      return {
+        title: 'Credenciales inválidas',
+        desc: 'La contraseña ingresada es incorrecta.',
+      }
+    case MojangErrorCode.ERROR_RATELIMIT:
+      return {
+        title: 'Limite de intentos alcanzado',
+        desc: 'Se ha alcanzado el límite máximo de intentos de autenticación.',
+      }
+    case MojangErrorCode.ERROR_INVALID_TOKEN:
+      return {
+        title: 'Token de acceso inválido',
+        desc: 'El token de acceso no es válido.',
+      }
+    case MojangErrorCode.ERROR_ACCESS_TOKEN_HAS_PROFILE:
+      return {
+        title: 'Token de acceso contiene perfil',
+        desc: 'El token de acceso ya está asignado a un perfil de Minecraft.',
+      }
+    case MojangErrorCode.ERROR_CREDENTIALS_MISSING:
+      return {
+        title: 'Faltan credenciales',
+        desc: 'No se proporcionaron credenciales para la autenticación.',
+      }
+    case MojangErrorCode.ERROR_INVALID_SALT_VERSION:
+      return {
+        title: 'Versión de sal de sesión inválida',
+        desc: 'La versión de sal de sesión es incompatible.',
+      }
+    case MojangErrorCode.ERROR_UNSUPPORTED_MEDIA_TYPE:
+      return {
+        title: 'Tipo de contenido no soportado',
+        desc: 'El tipo de contenido de la solicitud no es soportado.',
+      }
+    case MojangErrorCode.ERROR_GONE:
+      return {
+        title: 'Cuenta eliminada',
+        desc: 'La cuenta de usuario ha sido eliminada de Mojang.',
+      }
+    case MojangErrorCode.ERROR_UNREACHABLE:
+      return {
+        title: 'Servidor no disponible',
+        desc: 'El servidor de Mojang está temporalmente no disponible.',
+      }
+    case MojangErrorCode.ERROR_NOT_PAID:
+      return {
+        title: 'Juego no comprado',
+        desc: 'No se ha comprado el juego y no se puede autenticar.',
+      }
+    case MojangErrorCode.UNKNOWN:
+      return {
+        title: 'Error desconocido',
+        desc: 'Se produjo un error desconocido al intentar autenticar con Mojang.',
+      }
+    default:
+      throw new Error(`Error desconocido: ${errorCode}`)
+  }
+}
+
 
 // Functions
 
