@@ -712,31 +712,27 @@ function populateAuthAccounts() {
 
     const accHtml = `<div class="settingsAuthAccount" uuid="${acc.uuid}">
             <div class="settingsAuthAccountLeft">
-                <img class="settingsAuthAccountImage" alt="${
-                  acc.displayName
-                }" src="https://mc-heads.net/body/${acc.uuid}/60">
+                <img class="settingsAuthAccountImage" alt="${acc.displayName
+      }" src="https://mc-heads.net/body/${acc.uuid}/60">
             </div>
             <div class="settingsAuthAccountRight">
                 <div class="settingsAuthAccountDetails">
                     <div class="settingsAuthAccountDetailPane">
                         <div class="settingsAuthAccountDetailTitle">Username</div>
-                        <div class="settingsAuthAccountDetailValue">${
-                          acc.displayName
-                        }</div>
+                        <div class="settingsAuthAccountDetailValue">${acc.displayName
+      }</div>
                     </div>
                     <div class="settingsAuthAccountDetailPane">
                         <div class="settingsAuthAccountDetailTitle">UUID</div>
-                        <div class="settingsAuthAccountDetailValue">${
-                          acc.uuid
-                        }</div>
+                        <div class="settingsAuthAccountDetailValue">${acc.uuid
+      }</div>
                     </div>
                 </div>
                 <div class="settingsAuthAccountActions">
-                    <button class="settingsAuthAccountSelect" ${
-                      selectedUUID === acc.uuid
-                        ? "selected>Cuenta seleccionada &#10004;"
-                        : ">Seleccionar cuenta"
-                    }</button>
+                    <button class="settingsAuthAccountSelect" ${selectedUUID === acc.uuid
+        ? "selected>Cuenta seleccionada &#10004;"
+        : ">Seleccionar cuenta"
+      }</button>
                     <div class="settingsAuthAccountWrapper">
                         <button class="settingsAuthAccountLogOut">Cerrar sesión</button>
                     </div>
@@ -829,22 +825,20 @@ function parseModulesForUI(mdls, submodules, servConf) {
     if (
       mdl.rawModule.type === Type.ForgeMod ||
       mdl.rawModule.type === Type.LiteMod ||
-      mdl.rawModule.type === Type.LiteLoader
+      mdl.rawModule.type === Type.LiteLoader ||
+      mdl.rawModule.type === Type.FabricMod
     ) {
       if (mdl.getRequired().value) {
-        reqMods += `<div id="${mdl.getVersionlessMavenIdentifier()}" class="settingsBaseMod settings${
-          submodules ? "Sub" : ""
-        }Mod" enabled>
+        reqMods += `<div id="${mdl.getVersionlessMavenIdentifier()}" class="settingsBaseMod settings${submodules ? "Sub" : ""
+          }Mod" enabled>
                     <div class="settingsModContent">
                         <div class="settingsModMainWrapper">
                             <div class="settingsModStatus"></div>
                             <div class="settingsModDetails">
-                                <span class="settingsModName">${
-                                  mdl.rawModule.name
-                                }</span>
-                                <span class="settingsModVersion">v${
-                                  mdl.mavenComponents.version
-                                }</span>
+                                <span class="settingsModName">${mdl.rawModule.name
+          }</span>
+                                <span class="settingsModVersion">v${mdl.mavenComponents.version
+          }</span>
                             </div>
                         </div>
                         <label class="toggleSwitch" reqmod>
@@ -852,55 +846,49 @@ function parseModulesForUI(mdls, submodules, servConf) {
                             <span class="toggleSwitchSlider"></span>
                         </label>
                     </div>
-                    ${
-                      mdl.subModules.length > 0
-                        ? `<div class="settingsSubModContainer">
+                    ${mdl.subModules.length > 0
+            ? `<div class="settingsSubModContainer">
                         ${Object.values(
-                          parseModulesForUI(
-                            mdl.subModules,
-                            true,
-                            servConf[mdl.getVersionlessMavenIdentifier()]
-                          )
-                        ).join("")}
+              parseModulesForUI(
+                mdl.subModules,
+                true,
+                servConf[mdl.getVersionlessMavenIdentifier()]
+              )
+            ).join("")}
                     </div>`
-                        : ""
-                    }
+            : ""
+          }
                 </div>`;
       } else {
         const conf = servConf[mdl.getVersionlessMavenIdentifier()];
         const val = typeof conf === "object" ? conf.value : conf;
 
-        optMods += `<div id="${mdl.getVersionlessMavenIdentifier()}" class="settingsBaseMod settings${
-          submodules ? "Sub" : ""
-        }Mod" ${val ? "enabled" : ""}>
+        optMods += `<div id="${mdl.getVersionlessMavenIdentifier()}" class="settingsBaseMod settings${submodules ? "Sub" : ""
+          }Mod" ${val ? "enabled" : ""}>
                     <div class="settingsModContent">
                         <div class="settingsModMainWrapper">
                             <div class="settingsModStatus"></div>
                             <div class="settingsModDetails">
-                                <span class="settingsModName">${
-                                  mdl.rawModule.name
-                                }</span>
-                                <span class="settingsModVersion">v${
-                                  mdl.mavenComponents.version
-                                }</span>
+                                <span class="settingsModName">${mdl.rawModule.name
+          }</span>
+                                <span class="settingsModVersion">v${mdl.mavenComponents.version
+          }</span>
                             </div>
                         </div>
                         <label class="toggleSwitch">
-                            <input type="checkbox" formod="${mdl.getVersionlessMavenIdentifier()}" ${
-          val ? "checked" : ""
-        }>
+                            <input type="checkbox" formod="${mdl.getVersionlessMavenIdentifier()}" ${val ? "checked" : ""
+          }>
                             <span class="toggleSwitchSlider"></span>
                         </label>
                     </div>
-                    ${
-                      mdl.subModules.length > 0
-                        ? `<div class="settingsSubModContainer">
+                    ${mdl.subModules.length > 0
+            ? `<div class="settingsSubModContainer">
                         ${Object.values(
-                          parseModulesForUI(mdl.subModules, true, conf.mods)
-                        ).join("")}
+              parseModulesForUI(mdl.subModules, true, conf.mods)
+            ).join("")}
                     </div>`
-                        : ""
-                    }
+            : ""
+          }
                 </div>`;
       }
     }
@@ -995,29 +983,24 @@ async function resolveDropinModsForUI() {
   let dropinMods = "";
 
   for (dropin of CACHE_DROPIN_MODS) {
-    dropinMods += `<div id="${
-      dropin.fullName
-    }" class="settingsBaseMod settingsDropinMod" ${
-      !dropin.disabled ? "enabled" : ""
-    }>
+    dropinMods += `<div id="${dropin.fullName
+      }" class="settingsBaseMod settingsDropinMod" ${!dropin.disabled ? "enabled" : ""
+      }>
                     <div class="settingsModContent">
                         <div class="settingsModMainWrapper">
                             <div class="settingsModStatus"></div>
                             <div class="settingsModDetails">
-                                <span class="settingsModName">${
-                                  dropin.name
-                                }</span>
+                                <span class="settingsModName">${dropin.name
+      }</span>
                                 <div class="settingsDropinRemoveWrapper">
-                                    <button class="settingsDropinRemoveButton" remmod="${
-                                      dropin.fullName
-                                    }">Eliminar</button>
+                                    <button class="settingsDropinRemoveButton" remmod="${dropin.fullName
+      }">Eliminar</button>
                                 </div>
                             </div>
                         </div>
                         <label class="toggleSwitch">
-                            <input type="checkbox" formod="${
-                              dropin.fullName
-                            }" dropin ${!dropin.disabled ? "checked" : ""}>
+                            <input type="checkbox" formod="${dropin.fullName
+      }" dropin ${!dropin.disabled ? "checked" : ""}>
                             <span class="toggleSwitchSlider"></span>
                         </label>
                     </div>
@@ -1247,19 +1230,15 @@ async function loadSelectedServerOnModsTab() {
             <img class="serverListingImg" src="${serv.rawServer.icon}"/>
             <div class="serverListingDetails">
                 <span class="serverListingName">${serv.rawServer.name}</span>
-                <span class="serverListingDescription">${
-                  serv.rawServer.description
-                }</span>
+                <span class="serverListingDescription">${serv.rawServer.description
+      }</span>
                 <div class="serverListingInfo">
-                    <div class="serverListingVersion">${
-                      serv.rawServer.minecraftVersion
-                    }</div>
-                    <div class="serverListingRevision">${
-                      serv.rawServer.version
-                    }</div>
-                    ${
-                      serv.rawServer.mainServer
-                        ? `<div class="serverListingStarWrapper">
+                    <div class="serverListingVersion">${serv.rawServer.minecraftVersion
+      }</div>
+                    <div class="serverListingRevision">${serv.rawServer.version
+      }</div>
+                    ${serv.rawServer.mainServer
+        ? `<div class="serverListingStarWrapper">
                         <svg id="Layer_1" viewBox="0 0 107.45 104.74" width="20px" height="20px">
                             <defs>
                                 <style>.cls-1{fill:#fff;}.cls-2{fill:none;stroke:#fff;stroke-miterlimit:10;}</style>
@@ -1269,8 +1248,8 @@ async function loadSelectedServerOnModsTab() {
                         </svg>
                         <span class="serverListingStarTooltip">Servidor principal</span>
                     </div>`
-                        : ""
-                    }
+        : ""
+      }
                 </div>
             </div>
         `;
@@ -1562,9 +1541,8 @@ function populateJvmOptsLink(server) {
   } else if (major >= 9) {
     settingsJvmOptsLink.href = `https://docs.oracle.com/javase/${major}/tools/java.htm`;
   } else {
-    settingsJvmOptsLink.href = `https://docs.oracle.com/javase/${major}/docs/technotes/tools/${
-      process.platform === "win32" ? "windows" : "unix"
-    }/java.html`;
+    settingsJvmOptsLink.href = `https://docs.oracle.com/javase/${major}/docs/technotes/tools/${process.platform === "win32" ? "windows" : "unix"
+      }/java.html`;
   }
 }
 
@@ -1757,9 +1735,8 @@ function settingsUpdateButtonStatus(text, disabled = false, handler = null) {
  */
 function populateSettingsUpdateInformation(data) {
   if (data != null) {
-    settingsUpdateTitle.innerHTML = `Nueva versión ${
-      isPrerelease(data.version) ? "de Pre-lanzamiento" : "estable"
-    } disponible`;
+    settingsUpdateTitle.innerHTML = `Nueva versión ${isPrerelease(data.version) ? "de Pre-lanzamiento" : "estable"
+      } disponible`;
     settingsUpdateChangelogCont.style.display = null;
     settingsUpdateChangelogTitle.innerHTML = data.releaseName;
     settingsUpdateChangelogText.innerHTML = data.releaseNotes;
