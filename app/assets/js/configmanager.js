@@ -391,7 +391,7 @@ exports.addCrackedAccount = function (username) {
       const randomCharacter = characters.charAt(randomNumber);
       uuid += randomCharacter;
     }
-    return "OTCR-" + uuid;
+    return uuid;
   }
 
   const randomUUID = generateUUID();
