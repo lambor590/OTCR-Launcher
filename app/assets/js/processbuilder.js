@@ -17,23 +17,23 @@ const ConfigManager = require("./configmanager");
 const logger = LoggerUtil.getLogger("ProcessBuilder");
 
 class ProcessBuilder {
-  constructor(distroServer, versionData, forgeData, authUser, launcherVersion) {
+  constructor(distroServer, vanillaManifest, modManifest, authUser, launcherVersion) {
     this.gameDir = path.join(
       ConfigManager.getInstanceDirectory(),
       distroServer.rawServer.id
     );
     this.commonDir = ConfigManager.getCommonDirectory();
     this.server = distroServer;
-    this.versionData = versionData;
-    this.forgeData = forgeData;
+    this.vanillaManifest = vanillaManifest;
+    this.modManifest = modManifest;
     this.authUser = authUser;
     this.launcherVersion = launcherVersion;
     this.forgeModListFile = path.join(this.gameDir, "forgeMods.list"); // 1.13+
     this.fmlDir = path.join(this.gameDir, "forgeModList.json");
     this.llDir = path.join(this.gameDir, "liteloaderModList.json");
     this.libPath = path.join(this.commonDir, "libraries");
-
     this.usingLiteLoader = false;
+    this.usingFabricLoader = false;
     this.llPath = null;
   }
 
@@ -49,7 +49,9 @@ class ProcessBuilder {
     );
     process.throwDeprecation = true;
     this.setupLiteLoader();
-    logger.info("Usando liteloader:", this.usingLiteLoader);
+    logger.info("Usando procesador de lite:", this.usingLiteLoader);
+    this.usingFabricLoader = this.server.modules.some(mdl => mdl.rawModule.type === Type.Fabric)
+    logger.info('Usando procesador de fabric:', this.usingFabricLoader)
     const modObj = this.resolveModConfiguration(
       ConfigManager.getModConfiguration(this.server.rawServer.id).mods,
       this.server.modules
@@ -145,11 +147,11 @@ class ProcessBuilder {
   static isModEnabled(modCfg, required = null) {
     return modCfg != null
       ? (typeof modCfg === "boolean" && modCfg) ||
-          (typeof modCfg === "object" &&
-            (typeof modCfg.value !== "undefined" ? modCfg.value : true))
+      (typeof modCfg === "object" &&
+        (typeof modCfg.value !== "undefined" ? modCfg.value : true))
       : required != null
-      ? required.def
-      : true;
+        ? required.def
+        : true;
   }
 
   /**
@@ -204,7 +206,8 @@ class ProcessBuilder {
       if (
         type === Type.ForgeMod ||
         type === Type.LiteMod ||
-        type === Type.LiteLoader
+        type === Type.LiteLoader ||
+        type === Type.FabricMod
       ) {
         const o = !mdl.getRequired().value;
         const e = ProcessBuilder.isModEnabled(
@@ -223,7 +226,7 @@ class ProcessBuilder {
               continue;
             }
           }
-          if (type === Type.ForgeMod) {
+          if (type === Type.ForgeMod || type === Type.FabricMod) {
             fMods.push(mdl);
           } else {
             lMods.push(mdl);
@@ -240,7 +243,7 @@ class ProcessBuilder {
 
   _lteMinorVersion(version) {
     return (
-      Number(this.forgeData.id.split("-")[0].split(".")[1]) <= Number(version)
+      Number(this.modManifest.id.split("-")[0].split(".")[1]) <= Number(version)
     );
   }
 
@@ -253,7 +256,7 @@ class ProcessBuilder {
       if (this._lteMinorVersion(9)) {
         return false;
       }
-      const ver = this.forgeData.id.split("-")[2];
+      const ver = this.modManifest.id.split("-")[2];
       const pts = ver.split(".");
       const min = [14, 23, 3, 2655];
       for (let i = 0; i < pts.length; i++) {
@@ -312,20 +315,23 @@ class ProcessBuilder {
   }
 
   /**
-   * Construct the mod argument list for forge 1.13
+   * Construct the mod argument list for Forge 1.13 and Fabric
    *
    * @param {Array.<Object>} mods An array of mods to add to the mod list.
    */
   constructModList(mods) {
     const writeBuffer = mods
       .map((mod) => {
-        return mod.getExtensionlessMavenIdentifier();
+        return this.usingFabricLoader ? mod.getPath() : mod.getExtensionlessMavenIdentifier();
       })
       .join("\n");
 
     if (writeBuffer) {
       fs.writeFileSync(this.forgeModListFile, writeBuffer, "UTF-8");
-      return [
+      return this.usingFabricLoader ? [
+        '--fabric.addMods',
+        `@${this.forgeModListFile}`
+      ] : [
         "--fml.mavenRoots",
         path.join("..", "..", "common", "modstore"),
         "--fml.modLists",
@@ -338,10 +344,15 @@ class ProcessBuilder {
 
   _processAutoConnectArg(args) {
     if (ConfigManager.getAutoConnect() && this.server.rawServer.autoconnect) {
-      args.push("--server");
-      args.push(this.server.hostname);
-      args.push("--port");
-      args.push(this.server.port);
+      if (mcVersionAtLeast('1.20', this.server.rawServer.minecraftVersion)) {
+        args.push('--quickPlayMultiplayer')
+        args.push(`${this.server.hostname}:${this.server.port}`)
+      } else {
+        args.push('--server')
+        args.push(this.server.hostname)
+        args.push('--port')
+        args.push(this.server.port)
+      }
     }
   }
 
@@ -392,7 +403,7 @@ class ProcessBuilder {
     args.push("-Djava.library.path=" + tempNativePath);
 
     // Main Java Class
-    args.push(this.forgeData.mainClass);
+    args.push(this.modManifest.mainClass);
 
     // Forge Arguments
     args = args.concat(this._resolveForgeArgs());
@@ -414,13 +425,13 @@ class ProcessBuilder {
     const argDiscovery = /\${*(.*)}/;
 
     // JVM Arguments First
-    let args = this.versionData.arguments.jvm;
+    let args = this.vanillaManifest.arguments.jvm;
 
     // Debug securejarhandler
     // args.push('-Dbsl.debug=true')
 
-    if (this.forgeData.arguments.jvm != null) {
-      for (const argStr of this.forgeData.arguments.jvm) {
+    if (this.modManifest.arguments.jvm != null) {
+      for (const argStr of this.modManifest.arguments.jvm) {
         args.push(
           argStr
             .replaceAll("${library_directory}", this.libPath)
@@ -428,7 +439,7 @@ class ProcessBuilder {
               "${classpath_separator}",
               ProcessBuilder.getClasspathSeparator()
             )
-            .replaceAll("${version_name}", this.forgeData.id)
+            .replaceAll("${version_name}", this.modManifest.id)
         );
       }
     }
@@ -445,10 +456,10 @@ class ProcessBuilder {
     args = args.concat(ConfigManager.getJVMOptions(this.server.rawServer.id));
 
     // Main Java Class
-    args.push(this.forgeData.mainClass);
+    args.push(this.modManifest.mainClass);
 
     // Vanilla Arguments
-    args = args.concat(this.versionData.arguments.game);
+    args = args.concat(this.vanillaManifest.arguments.game);
 
     for (let i = 0; i < args.length; i++) {
       if (typeof args[i] === "object" && args[i].rules != null) {
@@ -506,7 +517,7 @@ class ProcessBuilder {
               val = this.authUser.displayName.trim();
               break;
             case "version_name":
-              //val = versionData.id
+              //val = vanillaManifest.id
               val = this.server.rawServer.id;
               break;
             case "game_directory":
@@ -516,7 +527,7 @@ class ProcessBuilder {
               val = path.join(this.commonDir, "assets");
               break;
             case "assets_index_name":
-              val = this.versionData.assets;
+              val = this.vanillaManifest.assets;
               break;
             case "auth_uuid":
               val = this.authUser.uuid.trim();
@@ -528,7 +539,7 @@ class ProcessBuilder {
               val = this.authUser.type === "microsoft" ? "msa" : "mojang";
               break;
             case "version_type":
-              val = this.versionData.type;
+              val = this.vanillaManifest.type;
               break;
             case "resolution_width":
               val = ConfigManager.getGameWidth();
@@ -559,30 +570,10 @@ class ProcessBuilder {
     }
 
     // Autoconnect
-    let isAutoconnectBroken;
-    try {
-      isAutoconnectBroken = ProcessBuilder.isAutoconnectBroken(
-        this.forgeData.id.split("-")[2]
-      );
-    } catch (err) {
-      logger.error(err);
-      logger.error(
-        "El formato de la versión de Forge cambió... asumiendo que la conexión automática funciona."
-      );
-      logger.debug("Versión de Forge:", this.forgeData.id);
-    }
-
-    if (isAutoconnectBroken) {
-      logger.error(
-        "La conexión automática del servidor está deshabilitada en Forge 1.15.2 para compilaciones anteriores a la 31.2.15 debido a un problema de desbordamiento de pila de OpenGL."
-      );
-      logger.error("¡Actualice su versión de Forge al menos a 31.2.15!");
-    } else {
-      this._processAutoConnectArg(args);
-    }
+    this._processAutoConnectArg(args)
 
     // Forge Specific Arguments
-    args = args.concat(this.forgeData.arguments.game);
+    args = args.concat(this.modManifest.arguments.game);
 
     // Filter null values
     args = args.filter((arg) => {
@@ -598,7 +589,7 @@ class ProcessBuilder {
    * @returns {Array.<string>} An array containing the arguments required by forge.
    */
   _resolveForgeArgs() {
-    const mcArgs = this.forgeData.minecraftArguments.split(" ");
+    const mcArgs = this.modManifest.minecraftArguments.split(" ");
     const argDiscovery = /\${*(.*)}/;
 
     // Replace the declared variables with their proper values.
@@ -611,7 +602,7 @@ class ProcessBuilder {
             val = this.authUser.displayName.trim();
             break;
           case "version_name":
-            //val = versionData.id
+            //val = vanillaManifest.id
             val = this.server.rawServer.id;
             break;
           case "game_directory":
@@ -621,7 +612,7 @@ class ProcessBuilder {
             val = path.join(this.commonDir, "assets");
             break;
           case "assets_index_name":
-            val = this.versionData.assets;
+            val = this.vanillaManifest.assets;
             break;
           case "auth_uuid":
             val = this.authUser.uuid.trim();
@@ -636,7 +627,7 @@ class ProcessBuilder {
             val = "{}";
             break;
           case "version_type":
-            val = this.versionData.type;
+            val = this.vanillaManifest.type;
             break;
         }
         if (val != null) {
@@ -708,10 +699,10 @@ class ProcessBuilder {
   classpathArg(mods, tempNativePath) {
     let cpArgs = [];
 
-    if (!mcVersionAtLeast("1.17", this.server.rawServer.minecraftVersion)) {
+    if (!mcVersionAtLeast("1.17", this.server.rawServer.minecraftVersion) || this.usingFabricLoader) {
       // Add the version.jar to the classpath.
       // Must not be added to the classpath for Forge 1.17+.
-      const version = this.versionData.id;
+      const version = this.vanillaManifest.id;
       cpArgs.push(
         path.join(this.commonDir, "versions", version, version + ".jar")
       );
@@ -751,7 +742,7 @@ class ProcessBuilder {
     const nativesRegex = /.+:natives-([^-]+)(?:-(.+))?/;
     const libs = {};
 
-    const libArr = this.versionData.libraries;
+    const libArr = this.vanillaManifest.libraries;
     fs.ensureDirSync(tempNativePath);
     for (let i = 0; i < libArr.length; i++) {
       const lib = libArr[i];
@@ -763,10 +754,10 @@ class ProcessBuilder {
             lib.extract != null ? lib.extract.exclude : ["META-INF/"];
           const artifact =
             lib.downloads.classifiers[
-              lib.natives[getMojangOS()].replace(
-                "${arch}",
-                process.arch.replace("x", "")
-              )
+            lib.natives[getMojangOS()].replace(
+              "${arch}",
+              process.arch.replace("x", "")
+            )
             ];
 
           // Location of native zip.
@@ -889,10 +880,10 @@ class ProcessBuilder {
     const mdls = this.server.modules;
     let libs = {};
 
-    // Locate Forge/Libraries
+    // Locate Forge/Fabric/Libraries
     for (let mdl of mdls) {
       const type = mdl.rawModule.type;
-      if (type === Type.ForgeHosted || type === Type.Library) {
+      if (type === Type.ForgeHosted || type === Type.Fabric || type === Type.Library) {
         libs[mdl.getVersionlessMavenIdentifier()] = mdl.getPath();
         if (mdl.subModules.length > 0) {
           const res = this._resolveModuleLibraries(mdl);
@@ -943,23 +934,6 @@ class ProcessBuilder {
       }
     }
     return libs;
-  }
-
-  static isAutoconnectBroken(forgeVersion) {
-    const minWorking = [31, 2, 15];
-    const verSplit = forgeVersion.split(".").map((v) => Number(v));
-
-    if (verSplit[0] === 31) {
-      for (let i = 0; i < minWorking.length; i++) {
-        if (verSplit[i] > minWorking[i]) {
-          return false;
-        } else if (verSplit[i] < minWorking[i]) {
-          return true;
-        }
-      }
-    }
-
-    return false;
   }
 }
 
