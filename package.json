@@ -1,8 +1,8 @@
 {
   "name": "otcr-launcher",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "productName": "Otako Craft Launcher",
-  "description": "Launcher de Minecraft para servidores con mods, hecho para Otako Craft Mods",
+  "description": "Launcher de Minecraft para servidores con mods, hecho para Otako Craft",
   "author": "The Ghost (lambor590)",
   "license": "UNLICENSED",
   "homepage": "https://github.com/lambor590/OTCR-Launcher",
