@@ -178,7 +178,8 @@ function syncModConfigurations(data) {
         if (
           type === Type.ForgeMod ||
           type === Type.LiteMod ||
-          type === Type.LiteLoader
+          type === Type.LiteLoader ||
+          type === Type.FabricMod
         ) {
           if (!mdl.getRequired().value) {
             const mdlID = mdl.getVersionlessMavenIdentifier();
@@ -219,7 +220,8 @@ function syncModConfigurations(data) {
         if (
           type === Type.ForgeMod ||
           type === Type.LiteMod ||
-          type === Type.LiteLoader
+          type === Type.LiteLoader ||
+          type === Type.FabricMod
         ) {
           if (!mdl.getRequired().value) {
             mods[mdl.getVersionlessMavenIdentifier()] = scanOptionalSubModules(
@@ -283,7 +285,8 @@ function scanOptionalSubModules(mdls, origin) {
       if (
         type === Type.ForgeMod ||
         type === Type.LiteMod ||
-        type === Type.LiteLoader
+        type === Type.LiteLoader ||
+        type === Type.FabricMod
       ) {
         // It is optional.
         if (!mdl.getRequired().value) {
