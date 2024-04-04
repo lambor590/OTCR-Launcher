@@ -30,7 +30,7 @@ function microsoftErrorDisplayable(errorCode) {
     case MicrosoftErrorCode.NO_PROFILE:
       return {
         title: 'No se encontró un perfil',
-        desc: 'La cuenta de Microsoft que está intentando iniciar sesión no tiene un perfil de Minecraft vinculado a ella.'
+        desc: 'Inicia sesión en la web de minecraft.net con tu cuenta de Microsoft y vuelve a intentarlo.'
       }
     case MicrosoftErrorCode.NO_XBOX_ACCOUNT:
       return {
